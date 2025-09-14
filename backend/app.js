@@ -14,9 +14,21 @@ const { errorHandler } = require("./middleware/error.middleware");
 const app = express();
 
 // Middleware
+
+const allowedOrigins = [
+  "http://localhost:3000",              // local dev
+  "https://your-frontend.vercel.app"    // replace with your actual Vercel frontend URL
+];
 app.use(cors({
-  origin: 'https://my-note-app-henna.vercel.app/', // frontend ka URL
-  credentials: true,              // cookies allow karne ke liye
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // Postman ya same-origin requests
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = "CORS policy: Origin not allowed";
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
