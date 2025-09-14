@@ -24,24 +24,24 @@ const initialState = {
 // --------------------- Thunks ---------------------
 
 export const checkAuth = createAsyncThunk("auth/checkAuth", async () => {
-  const res = await axios.get(`${API_URL}/api/users/check-auth`);
+  const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/check-auth`);
   return res.data.email;
 });
 
 export const login = createAsyncThunk("auth/login", async (loginForm) => {
-  const res = await axios.post(`${API_URL}/api/users/login`, loginForm);
+  const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/users/login`, loginForm);
   localStorage.setItem("user", res.data.email);
   return res.data.email;
 });
 
 export const signup = createAsyncThunk("auth/signup", async (signupForm) => {
-  const res = await axios.post(`${API_URL}/api/users/signup`, signupForm);
+  const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/users/signup`, signupForm);
   localStorage.setItem("user", res.data.email);
   return res.data.email;
 });
 
 export const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
-  await axios.get(`${API_URL}/api/users/logout`);
+  await axios.get(`${process.env.REACT_APP_API_URL}/api/users/logout`);
   localStorage.removeItem("user");
 });
 
