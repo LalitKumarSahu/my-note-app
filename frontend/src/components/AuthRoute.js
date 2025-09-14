@@ -1,18 +1,15 @@
-// AuthRoute.js
-import React from "react";
+import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
 const AuthRoute = ({ children }) => {
-	// const user = useSelector((state) => state.auth.user);
-	const userLocal = localStorage.getItem("user");
-	console.log(userLocal);
+  const user = useSelector((state) => state.auth.user);
 
-	if (userLocal) {
-		// Redirect them to the home page if they are already logged in
-		return <Navigate to="/" replace />;
-	}
+  if (user) {
+    // user already logged in → home page pe redirect
+    return <Navigate to="/" replace />;
+  }
 
-	return children;
+  return children;
 };
 
 export default AuthRoute;

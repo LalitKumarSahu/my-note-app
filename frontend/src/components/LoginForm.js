@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login, resetLoginForm, setLoginForm } from "../stores/authReducer";
 
+
 const LoginForm = () => {
 	const loginForm = useSelector((state) => state.auth.loginForm);
 	const loadingLogin = useSelector((state) => state.auth.loadingLogin);
@@ -19,13 +20,18 @@ const LoginForm = () => {
 		);
 	};
 
-	const handleLogin = async (e) => {
-		e.preventDefault();
-		dispatch(login(loginForm)).then(() => {
-			dispatch(resetLoginForm());
-			navigate("/");
-		});
-	};
+const handleLogin = async (e) => {
+	e.preventDefault();
+	try {
+		await dispatch(login(loginForm)).unwrap(); // thunk call karega
+		dispatch(resetLoginForm());
+		navigate("/"); // login ke baad notes page ya create note pe bhej dega
+	} catch (err) {
+		console.error("Login failed:", err);
+		alert("Login failed: " + (err.message || "Unknown error"));
+	}
+};
+;
 
 	return (
 		<form

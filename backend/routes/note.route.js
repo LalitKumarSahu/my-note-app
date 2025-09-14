@@ -1,10 +1,11 @@
+// note.route.js
 const express = require("express");
 const noteController = require("../controllers/note.controller");
-const { requireAuth } = require("../middleware/auth.middleware"); // Route-Specific Middleware
+const requireAuth = require("../middleware/auth.middleware"); // ✅ fix
 
 const router = express.Router();
 
-// NOTE ROUTES
+// Routes
 router.get("/", requireAuth, noteController.getAllNotes);
 router.get("/:id", requireAuth, noteController.getNoteById);
 router.post("/", requireAuth, noteController.createNote);

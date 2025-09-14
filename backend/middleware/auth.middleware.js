@@ -1,23 +1,35 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 
-// Read token off cookies, Decode the token, Check expiration, Find user using decoded sub, Attach user to req, Continue on
 const requireAuth = async (req, res, next) => {
-	try {
-		const token = req.cookies.Authorization;
-		if (!token) throw new Error("No token provided.");
+  try {
+    // 1. Token निकालना (cookie या header से)
+    const token =
+      req.cookies.Authorization ||
+      (req.headers.authorization &&
+        req.headers.authorization.split(" ")[1]);
 
-		const decoded = jwt.verify(token, process.env.SECRET);
-		if (Date.now() > decoded.exp) throw new Error("Token has expired.");
+    if (!token) {
+      return res.status(401).json({ message: "No token, authorization denied" });
+    }
 
-		const user = await User.findById(decoded.sub);
-		if (!user) throw new Error("User not found.");
+    // 2. Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-		req.user = user;
-		next();
-	} catch (err) {
-		next(Object.assign(err, { statusCode: 401 }));
-	}
+    // 3. User attach करना
+    const user = await User.findById(decoded.sub).select("-password");
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(401)
+      .json({ message: "Token has expired or is invalid" });
+  }
 };
 
-module.exports = { requireAuth };
+module.exports = requireAuth; // ✅ direct function export

@@ -1,31 +1,37 @@
-// Import dependencies
 const express = require("express");
-const noteRoutes = require("./routes/note.route");
-const userRoutes = require("./routes/user.route");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const { requestLogger } = require("./middleware/logger.middleware");
+const morgan = require("morgan"); // logger
+require("dotenv").config();
+
+// Routes
+const userRoutes = require("./routes/user.route");
+const noteRoutes = require("./routes/note.route");
+
+// Error middleware
 const { errorHandler } = require("./middleware/error.middleware");
 
-// Create an express app
 const app = express();
 
-// Configure express app (global middleware)
-app.use(requestLogger); // Apply request logging middleware to log every request to the server
+// Middleware
+app.use(cors({
+  origin: "http://localhost:3000", // frontend ka URL
+  credentials: true,              // cookies allow karne ke liye
+}));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: true, credentials: true }));
+app.use(morgan("dev"));
 
-// This is the root route. It is used to check if the server is running.
+// Routes
+app.use("/api/users", userRoutes);
+app.use("/api/notes", noteRoutes);
+
+// Health Check
 app.get("/", (req, res) => {
-	res.status(200).json({ alive: "true" });
+  res.send("✅ API is running...");
 });
 
-// Routing
-app.use("/api/notes", noteRoutes);
-app.use("/api/auth", userRoutes);
-
-// Apply centralized error handling middleware
+// Error handler (last middleware)
 app.use(errorHandler);
 
 module.exports = app;
