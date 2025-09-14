@@ -15,7 +15,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:3000", // frontend ka URL
+  origin: 'https://my-note-app-henna.vercel.app/', // frontend ka URL
   credentials: true,              // cookies allow karne ke liye
 }));
 app.use(express.json());
