@@ -12,7 +12,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",                  // local frontend
-  // "https://my-note-app-qps4-git-main-lalit-kumars-projects-ab18c2fe.vercel.app"    // deployed frontend
+   "https://my-note-app-zkja.onrender.com"    // deployed frontend
 ];
 
 app.use(cors({
