@@ -1,35 +1,41 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const morgan = require("morgan"); // logger
+const morgan = require("morgan");
 require("dotenv").config();
 
-// Routes
 const userRoutes = require("./routes/user.route");
 const noteRoutes = require("./routes/note.route");
-
-// Error middleware
 const { errorHandler } = require("./middleware/error.middleware");
 
 const app = express();
 
-// Middleware
-
 const allowedOrigins = [
-  "http://localhost:3000",              // local dev
-  "https://your-frontend.vercel.app"    // replace with your actual Vercel frontend URL
+  "http://localhost:3000",                  // local frontend
+  "https://my-note-app-henna.vercel.app"    // deployed frontend
 ];
+
 app.use(cors({
   origin: function(origin, callback) {
     if (!origin) return callback(null, true); // Postman ya same-origin requests
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = "CORS policy: Origin not allowed";
-      return callback(new Error(msg), false);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    return callback(new Error("Not allowed by CORS"), false);
   },
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+app.options("*", cors({
+  origin: allowedOrigins,
   credentials: true
 }));
+
+
+
+// Other middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
@@ -43,7 +49,7 @@ app.get("/", (req, res) => {
   res.send("✅ API is running...");
 });
 
-// Error handler (last middleware)
+// Error handler
 app.use(errorHandler);
 
 module.exports = app;
